@@ -515,3 +515,7 @@ layerling is a modified version of SketchForge-3D and is licensed under the **GN
 If you modify layerling and let people use the modified version over a network, section 13 of the licence requires you to
 offer them the corresponding source code. The dashboard carries a **Source** link for exactly that: set
 `NEXT_PUBLIC_SOURCE_CODE_URL` at build time to the public URL of the source your build came from.
+
+## Omarchy and SpaceMouse (BonEvil fork)
+
+Run `npm run setup:omarchy` to install the desktop launcher and SpaceMouse driver dependencies. See [Omarchy setup](integrations/omarchy/README.md) for controls and lifecycle details.

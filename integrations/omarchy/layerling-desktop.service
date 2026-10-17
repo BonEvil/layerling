@@ -1,0 +1,13 @@
+[Unit]
+Description=Layerling desktop window and server lifecycle
+Requires=layerling.service
+Wants=layerling-spacemouse-camera.service
+BindsTo=layerling.service
+After=layerling.service
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/layerling-desktop-session
+ExecStopPost=-/usr/bin/systemctl --user --no-block stop layerling.service
+Restart=no
+TimeoutStopSec=20

@@ -1,0 +1,5 @@
+{
+  "arch_packages": ["spacenavd", "libspnav", "python"],
+  "system_service": "spacenavd.service",
+  "runtime_commands": ["node", "npm", "hyprctl", "omarchy", "systemctl"]
+}

@@ -1,0 +1,73 @@
+#!/usr/bin/python
+"""Keep the local CAD server alive only while its desktop window is open."""
+import json
+import subprocess
+import time
+import urllib.request
+
+URL = "http://127.0.0.1:3000/?editor=1"
+
+
+def layerling_windows(clients):
+    return {
+        w["address"] for w in clients
+        if w.get("class", "").startswith("chrome-127.0.0.1__-")
+        and "layerling" in w.get("title", "").lower()
+    }
+
+
+def clients():
+    return json.loads(subprocess.check_output(
+        ["hyprctl", "clients", "-j"], text=True, timeout=5))
+
+
+def main():
+    deadline = time.monotonic() + 120
+    while True:
+        try:
+            with urllib.request.urlopen(
+                "http://127.0.0.1:3000/api/layerling-mcp", timeout=3
+            ) as response:
+                if response.status == 200:
+                    break
+        except OSError:
+            pass
+        if time.monotonic() >= deadline:
+            raise RuntimeError("Layerling server did not become ready")
+        time.sleep(1)
+
+    tracked = layerling_windows(clients())
+    launcher = None
+    if not tracked:
+        launcher = subprocess.Popen(["omarchy", "launch", "webapp", URL])
+    deadline = time.monotonic() + 90
+    seen = bool(tracked)
+    missing_since = None
+    while True:
+        if launcher is not None:
+            launcher.poll()
+        try:
+            windows = clients()
+        except (OSError, ValueError, subprocess.SubprocessError):
+            # A failed compositor query is not proof that the window closed.
+            missing_since = None
+            time.sleep(1)
+            continue
+        mapped = {w["address"] for w in windows}
+        tracked = (tracked & mapped) | layerling_windows(windows)
+        if tracked:
+            seen = True
+            missing_since = None
+        elif seen:
+            if missing_since is None:
+                missing_since = time.monotonic()
+            elif time.monotonic() - missing_since >= 3:
+                print("Last Layerling window closed; stopping local server.", flush=True)
+                return
+        elif time.monotonic() >= deadline:
+            raise RuntimeError("Layerling window did not open")
+        time.sleep(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -9,6 +9,7 @@ import { computeSectionPlaneVector, DEFAULT_SECTION_SETTINGS, getSectionBounds, 
 import { projectSectionPoint, type SectionLoop, type SectionPoint } from "@/lib/sectionSvg";
 import { circleOfLoop, sectionMeasurement, sectionPointToWorld, snapSectionPoint, type SectionSnap } from "@/lib/sectionMeasure";
 import * as THREE from "three";
+import { attachSpaceMouse } from "@/lib/spaceMouse";
 import { acceleratedRaycast, computeBoundsTree, disposeBoundsTree } from "three-mesh-bvh";
 import { groupShowsPartColors } from "@/lib/groupColors";
 import { triangleTouchesRect, type ScreenRect } from "@/lib/screenRectHit";
@@ -7878,6 +7879,17 @@ export function WorkplaneViewport({
     }
   }, []);
 
+  useEffect(() => {
+    const home = () => resetView();
+    const focus = () => { focusSelection(); };
+    window.addEventListener("layerling:spacemouse-home", home);
+    window.addEventListener("layerling:spacemouse-focus", focus);
+    return () => {
+      window.removeEventListener("layerling:spacemouse-home", home);
+      window.removeEventListener("layerling:spacemouse-focus", focus);
+    };
+  }, [resetView, focusSelection]);
+
   const setViewCubeFace = useCallback((face: ViewCubeFace) => {
     const state = threeRef.current;
     if (!state) {
@@ -9232,6 +9244,7 @@ function createThreeScene(host: HTMLDivElement): ThreeState {
   controls.minPolarAngle = 0;
   controls.maxPolarAngle = Math.PI;
   controls.target.copy(CAMERA_TARGET);
+  attachSpaceMouse(controls);
 
   const ambient = new THREE.HemisphereLight("#ffffff", "#d6edf5", 2.1);
   scene.add(ambient);

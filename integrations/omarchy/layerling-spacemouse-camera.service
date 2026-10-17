@@ -1,0 +1,13 @@
+[Unit]
+Description=Layerling SpaceMouse camera input
+PartOf=layerling-desktop.service
+BindsTo=layerling-desktop.service
+After=layerling-desktop.service
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/systemctl --system is-active --quiet spacenavd.service
+ExecStart=/usr/bin/python %h/.local/lib/layerling/spacemouse-relay.py
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=5
