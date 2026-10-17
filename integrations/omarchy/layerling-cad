@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+if systemctl --user is-active --quiet layerling-desktop.service; then
+  exec omarchy launch webapp 'http://127.0.0.1:3000/?editor=1'
+fi
+systemctl --user start layerling-desktop.service

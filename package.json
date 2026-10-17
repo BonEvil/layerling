@@ -33,7 +33,8 @@
     "printers:update": "node scripts/generate-printer-presets.mjs",
     "printers:check": "node scripts/check-printer-updates.mjs",
     "ci": "npm run typecheck && npm run test",
-    "mcp:layerling": "node scripts/layerling-mcp-server.mjs"
+    "mcp:layerling": "node scripts/layerling-mcp-server.mjs",
+    "setup:omarchy": "python integrations/omarchy/install.py"
   },
   "dependencies": {
     "@types/three": "^0.184.1",
