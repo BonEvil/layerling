@@ -83,7 +83,7 @@ Description=Layerling local CAD from BonEvil fork
 
 [Service]
 Type=simple
-WorkingDirectory={unit_value(root)}
+WorkingDirectory={str(root).replace("%", "%%")}
 Environment={unit_value('PATH='+path)}
 Environment=NEXT_TELEMETRY_DISABLED=1
 ExecStart={unit_value(npm)} run dev -- --hostname 127.0.0.1 --port 3000
